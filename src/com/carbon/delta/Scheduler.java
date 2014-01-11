@@ -1,23 +1,25 @@
 /* 
- * Copyright (C) 2013 Jorrit "Chainfire" Jongma
- * Copyright (C) 2013 The OmniROM Project
+ * Copyright (C) 2014 David "PhaseBurn" Bauman
+ * Copyright (C) 2014 CarbonROM
+ * Based on Chainfire's OpenDelta for Omni Rom, and work by Myself5
  */
 /* 
- * This file is part of OpenDelta.
+ * This file is part of CarbonDelta.
  * 
- * OpenDelta is free software: you can redistribute it and/or modify
+ * CarbonDelta is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * OpenDelta is distributed in the hope that it will be useful,
+ * CarbonDelta is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with OpenDelta. If not, see <http://www.gnu.org/licenses/>.
+ * along with CarbonDelta. If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * We're using three different alarms for scheduling. The primary is an
  * (inexact) interval alarm that is fired every 30-60 minutes (if the device 
@@ -42,7 +44,7 @@
  * (Wi-Fi) and battery (charging / juice aplenty) state. 
  */
 
-package eu.chainfire.opendelta;
+package com.carbon.delta;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -51,7 +53,7 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-import eu.chainfire.opendelta.ScreenState.OnScreenStateListener;
+import com.carbon.delta.ScreenState.OnScreenStateListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

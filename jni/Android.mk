@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_CFLAGS += -Ofast
-LOCAL_MODULE := libopendelta
+LOCAL_MODULE := libcarbondelta
 LOCAL_SRC_FILES += xdelta3-3.0.7/xdelta3.c zipadjust.c delta.c delta_jni.c
 LOCAL_LDLIBS := -lz
 

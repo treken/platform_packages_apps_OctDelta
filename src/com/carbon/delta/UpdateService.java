@@ -1,25 +1,26 @@
 /* 
- * Copyright (C) 2013 Jorrit "Chainfire" Jongma
- * Copyright (C) 2013 The OmniROM Project
+ * Copyright (C) 2014 David "PhaseBurn" Bauman
+ * Copyright (C) 2014 CarbonROM
+ * Based on Chainfire's OpenDelta for Omni Rom, and work by Myself5
  */
 /* 
- * This file is part of OpenDelta.
+ * This file is part of CarbonDelta.
  * 
- * OpenDelta is free software: you can redistribute it and/or modify
+ * CarbonDelta is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * OpenDelta is distributed in the hope that it will be useful,
+ * CarbonDelta is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with OpenDelta. If not, see <http://www.gnu.org/licenses/>.
+ * along with CarbonDelta. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.chainfire.opendelta;
+package com.carbon.delta;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -42,10 +43,10 @@ import android.os.StatFs;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-import eu.chainfire.opendelta.BatteryState.OnBatteryStateListener;
-import eu.chainfire.opendelta.NetworkState.OnNetworkStateListener;
-import eu.chainfire.opendelta.Scheduler.OnWantUpdateCheckListener;
-import eu.chainfire.opendelta.ScreenState.OnScreenStateListener;
+import com.carbon.delta.BatteryState.OnBatteryStateListener;
+import com.carbon.delta.NetworkState.OnNetworkStateListener;
+import com.carbon.delta.Scheduler.OnWantUpdateCheckListener;
+import com.carbon.delta.ScreenState.OnScreenStateListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -58,19 +59,18 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class UpdateService
+public class 
+        UpdateService
         extends
         Service
         implements
@@ -104,19 +104,19 @@ public class UpdateService
         intent.putExtra(EXTRA_ALARM_ID, id);
         return PendingIntent.getService(context, id, intent, 0);
     }
-   
+
     public static final String ACTION_SYSTEM_UPDATE_SETTINGS = "android.settings.SYSTEM_UPDATE_SETTINGS";
     public static final String PERMISSION_ACCESS_CACHE_FILESYSTEM = "android.permission.ACCESS_CACHE_FILESYSTEM";
     public static final String PERMISSION_REBOOT = "android.permission.REBOOT";
 
-    public static final String BROADCAST_INTENT = "eu.chainfire.opendelta.intent.BROADCAST_STATE";
-    public static final String EXTRA_STATE = "eu.chainfire.opendelta.extra.ACTION_STATE";
-    public static final String EXTRA_LAST_CHECK = "eu.chainfire.opendelta.extra.LAST_CHECK";
-    public static final String EXTRA_PROGRESS = "eu.chainfire.opendelta.extra.PROGRESS";
-    public static final String EXTRA_CURRENT = "eu.chainfire.opendelta.extra.CURRENT";
-    public static final String EXTRA_TOTAL = "eu.chainfire.opendelta.extra.TOTAL";
-    public static final String EXTRA_FILENAME = "eu.chainfire.opendelta.extra.FILENAME";
-    public static final String EXTRA_MS = "eu.chainfire.opendelta.extra.MS";
+    public static final String BROADCAST_INTENT = "com.carbon.delta.intent.BROADCAST_STATE";
+    public static final String EXTRA_STATE = "com.carbon.delta.extra.ACTION_STATE";
+    public static final String EXTRA_LAST_CHECK = "com.carbon.delta.extra.LAST_CHECK";
+    public static final String EXTRA_PROGRESS = "com.carbon.delta.extra.PROGRESS";
+    public static final String EXTRA_CURRENT = "com.carbon.delta.extra.CURRENT";
+    public static final String EXTRA_TOTAL = "com.carbon.delta.extra.TOTAL";
+    public static final String EXTRA_FILENAME = "com.carbon.delta.extra.FILENAME";
+    public static final String EXTRA_MS = "com.carbon.delta.extra.MS";
 
     public static final String STATE_ACTION_NONE = "action_none";
     public static final String STATE_ACTION_CHECKING = "action_checking";
@@ -131,10 +131,10 @@ public class UpdateService
     public static final String STATE_ERROR_DISK_SPACE = "error_disk_space";
     public static final String STATE_ERROR_UNKNOWN = "error_unknown";
 
-    private static final String ACTION_CHECK = "eu.chainfire.opendelta.action.CHECK";
-    private static final String ACTION_FLASH = "eu.chainfire.opendelta.action.FLASH";
-    private static final String ACTION_ALARM = "eu.chainfire.opendelta.action.ALARM";
-    private static final String EXTRA_ALARM_ID = "eu.chainfire.opendelta.extra.ALARM_ID";
+    private static final String ACTION_CHECK = "com.carbon.delta.action.CHECK";
+    private static final String ACTION_FLASH = "com.carbon.delta.action.FLASH";
+    private static final String ACTION_ALARM = "com.carbon.delta.action.ALARM";
+    private static final String EXTRA_ALARM_ID = "com.carbon.delta.extra.ALARM_ID";
 
     private static final int NOTIFICATION_BUSY = 1;
     private static final int NOTIFICATION_UPDATE = 2;
@@ -155,7 +155,15 @@ public class UpdateService
                 state.equals(STATE_ERROR_UNKNOWN) || state.equals(STATE_ERROR_DISK_SPACE));
     }
 
-    private Config config;
+    private String property_version;
+    private String property_device;
+    private String filename_base;
+    private String path_base;
+    private String path_flash_after_update;
+    private String url_base_delta;
+    private String url_base_update;
+    private String url_base_full;
+    private boolean apply_signature;
 
     private HandlerThread handlerThread;
     private Handler handler;
@@ -178,6 +186,26 @@ public class UpdateService
      * Using reflection voodoo instead calling the hidden class directly, to
      * dev/test outside of AOSP tree
      */
+    private String getProperty(String key, String defValue) {
+        try {
+            Class<?> SystemProperties = getClassLoader().loadClass("android.os.SystemProperties");
+            Method get = SystemProperties.getMethod("get", new Class[] {
+                    String.class, String.class
+            });
+            return (String) get.invoke(null, new Object[] {
+                    key, defValue
+            });
+        } catch (Exception e) {
+            // A lot of voodoo could go wrong here, return failure instead of crash
+            Logger.ex(e);
+        }
+        return null;
+    }
+
+    /*
+     * Using reflection voodoo instead calling the hidden class directly, to
+     * dev/test outside of AOSP tree
+     */
     private boolean setPermissions(String path, int mode, int uid, int gid) {
         try {
             Class<?> FileUtils = getClassLoader().loadClass("android.os.FileUtils");
@@ -188,8 +216,7 @@ public class UpdateService
                     path, Integer.valueOf(mode), Integer.valueOf(uid), Integer.valueOf(gid)
             }) == 0);
         } catch (Exception e) {
-            // A lot of voodoo could go wrong here, return failure instead of
-            // crash
+            // A lot of voodoo could go wrong here, return failure instead of crash
             Logger.ex(e);
         }
         return false;
@@ -206,14 +233,38 @@ public class UpdateService
 
         Logger.setDebugLogging(getResources().getBoolean(R.bool.debug_output));
 
-        config = Config.getInstance(this);
+        property_version = getProperty(getString(R.string.property_version), "");
+        property_device = getProperty(getString(R.string.property_device), "");
+        filename_base = String.format(Locale.ENGLISH, getString(R.string.filename_base),
+                property_version);
+        path_base = String.format(Locale.ENGLISH, "%s%s%s%s", Environment
+                .getExternalStorageDirectory().getAbsolutePath(), File.separator,
+                getString(R.string.path_base), File.separator);
+        path_flash_after_update = String.format(Locale.ENGLISH, "%s%s%s", path_base,
+                "FlashAfterUpdate", File.separator);
+        url_base_delta = String.format(Locale.ENGLISH, getString(R.string.url_base_delta),
+                property_device);
+        url_base_update = String.format(Locale.ENGLISH, getString(R.string.url_base_update),
+                property_device);
+        url_base_full = String.format(Locale.ENGLISH, getString(R.string.url_base_full),
+                property_device);
+        apply_signature = getResources().getBoolean(R.bool.apply_signature);
+
+        Logger.d("property_version: %s", property_version);
+        Logger.d("property_device: %s", property_device);
+        Logger.d("filename_base: %s", filename_base);
+        Logger.d("path_base: %s", path_base);
+        Logger.d("path_flash_after_update: %s", path_flash_after_update);
+        Logger.d("url_base_delta: %s", url_base_delta);
+        Logger.d("url_base_update: %s", url_base_update);
+        Logger.d("url_base_full: %s", url_base_full);
 
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK, "OpenDelta WakeLock");
+                PowerManager.PARTIAL_WAKE_LOCK, "CarbonDelta WakeLock");
         wifiLock = ((WifiManager) getSystemService(WIFI_SERVICE)).createWifiLock(
-                WifiManager.WIFI_MODE_FULL, "OpenDelta WifiLock");
+                WifiManager.WIFI_MODE_FULL, "CarbonDelta WifiLock");
 
-        handlerThread = new HandlerThread("OpenDelta Service Thread");
+        handlerThread = new HandlerThread("CarbonDelta Service Thread");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
 
@@ -520,7 +571,7 @@ public class UpdateService
         if (fileBase.getTag() == null) {
             if (force || networkState.getState()) {
                 String url = url_base + fileBase.getName();
-                String fn = config.getPathBase() + fileBase.getName();
+                String fn = path_base + fileBase.getName();
                 File f = new File(fn);
                 Logger.d("download: %s --> %s", url, fn);
 
@@ -590,8 +641,7 @@ public class UpdateService
         try {
             progress.join();
         } catch (InterruptedException e) {
-            // We got interrupted in a very short wait, surprising, but not a
-            // problem. 'progress' will quit by itself.
+            // We got interrupted in a very short wait, surprising, but not a problem. 'progress' will quit by itself.
             Logger.ex(e);
         }
 
@@ -619,8 +669,7 @@ public class UpdateService
         try {
             progress.join();
         } catch (InterruptedException e) {
-            // We got interrupted in a very short wait, surprising, but not a
-            // problem. 'progress' will quit by itself.
+            // We got interrupted in a very short wait, surprising, but not a problem. 'progress' will quit by itself.
             Logger.ex(e);
         }
 
@@ -663,7 +712,7 @@ public class UpdateService
 
         long deltaDownloadSize = 0L;
         for (DeltaInfo di : deltas) {
-            String fn = config.getPathBase() + di.getUpdate().getName();
+            String fn = path_base + di.getUpdate().getName();
             if (di.getUpdate().match(new File(fn), true,
                     getMD5Progress(STATE_ACTION_CHECKING_MD5, di.getUpdate().getName())) == di
                     .getUpdate().getUpdate()) {
@@ -675,8 +724,8 @@ public class UpdateService
 
         DeltaInfo lastDelta = deltas.get(deltas.size() - 1);
         {
-            if (config.getApplySignature()) {
-                String fn = config.getPathBase() + lastDelta.getSignature().getName();
+            if (apply_signature) {
+                String fn = path_base + lastDelta.getSignature().getName();
                 if (lastDelta.getSignature().match(
                         new File(fn),
                         true,
@@ -699,7 +748,7 @@ public class UpdateService
 
         long fullDownloadSize = 0;
         {
-            String fn = config.getPathBase() + lastDelta.getOut().getName();
+            String fn = path_base + lastDelta.getOut().getName();
             if (lastDelta.getOut().match(new File(fn), true,
                     getMD5Progress(STATE_ACTION_CHECKING_MD5, lastDelta.getOut().getName())) == lastDelta
                     .getOut().getOfficial()) {
@@ -727,7 +776,7 @@ public class UpdateService
                 if (di.getUpdate().getTag() == null)
                     requiredSpace += sizeOnDisk(di.getUpdate().getUpdate().getSize());
             }
-            if (config.getApplySignature()) {
+            if (apply_signature) {
                 requiredSpace += sizeOnDisk(lastDelta.getSignature().getUpdate().getSize());
             }
 
@@ -752,7 +801,7 @@ public class UpdateService
         String initialFile = null;
 
         // Check if an original flashable ZIP is in our preferred location
-        String expectedLocation = config.getPathBase() + firstDelta.getIn().getName();
+        String expectedLocation = path_base + firstDelta.getIn().getName();
         DeltaInfo.FileSizeMD5 match = null;
         if (expectedLocation.equals(possibleMatch)) {
             match = firstDelta.getIn().match(new File(expectedLocation), false, null);
@@ -772,7 +821,7 @@ public class UpdateService
 
         // If the user flashed manually, the file is probably not in our
         // preferred location (assuming it wasn't sideloaded), so search
-        // the (internal) storage for it. Should at some point be
+        // the (internal) storage for it. Should at some point be 
         // extended to search (true) external storage as well.
         if (initialFile == null) {
             initialFile = findZIPOnSD(firstDelta.getIn(), null);
@@ -795,7 +844,7 @@ public class UpdateService
         DeltaInfo lastDelta = deltas.get(deltas.size() - 1);
 
         final String[] filename = new String[] {
-                null
+            null
         };
         updateState(STATE_ACTION_DOWNLOADING, 0f, 0L, totalDownloadSize, null, null);
 
@@ -819,7 +868,7 @@ public class UpdateService
 
         if (getFull) {
             filename[0] = lastDelta.getOut().getName();
-            if (!downloadDeltaFile(config.getUrlBaseFull(), lastDelta.getOut(), lastDelta.getOut()
+            if (!downloadDeltaFile(url_base_full, lastDelta.getOut(), lastDelta.getOut()
                     .getOfficial(), progressListener, force)) {
                 updateState(STATE_ERROR_UNKNOWN, null, null, null, null, null);
                 Logger.d("download error");
@@ -828,8 +877,7 @@ public class UpdateService
         } else {
             for (DeltaInfo di : deltas) {
                 filename[0] = di.getUpdate().getName();
-                if (!downloadDeltaFile(config.getUrlBaseUpdate(), di.getUpdate(), di.getUpdate()
-                        .getUpdate(),
+                if (!downloadDeltaFile(url_base_update, di.getUpdate(), di.getUpdate().getUpdate(),
                         progressListener, force)) {
                     updateState(STATE_ERROR_UNKNOWN, null, null, null, null, null);
                     Logger.d("download error");
@@ -838,11 +886,10 @@ public class UpdateService
                 last[0] += di.getUpdate().getUpdate().getSize();
             }
 
-            if (config.getApplySignature()) {
+            if (apply_signature) {
                 filename[0] = lastDelta.getSignature().getName();
-                if (!downloadDeltaFile(config.getUrlBaseUpdate(), lastDelta.getSignature(),
-                        lastDelta
-                                .getSignature().getUpdate(), progressListener, force)) {
+                if (!downloadDeltaFile(url_base_update, lastDelta.getSignature(), lastDelta
+                        .getSignature().getUpdate(), progressListener, force)) {
                     updateState(STATE_ERROR_UNKNOWN, null, null, null, null, null);
                     Logger.d("download error");
                     return false;
@@ -864,7 +911,7 @@ public class UpdateService
 
         int tempFile = 0;
         String[] tempFiles = new String[] {
-                config.getPathBase() + "temp1", config.getPathBase() + "temp2"
+                path_base + "temp1", path_base + "temp2"
         };
         try {
             long start = SystemClock.elapsedRealtime();
@@ -875,7 +922,7 @@ public class UpdateService
                 total += firstDelta.getIn().getStore().getSize();
             for (DeltaInfo di : deltas)
                 total += di.getUpdate().getApplied().getSize();
-            if (config.getApplySignature())
+            if (apply_signature)
                 total += lastDelta.getSignature().getApplied().getSize();
 
             if (initialFileNeedsProcessing) {
@@ -893,11 +940,10 @@ public class UpdateService
                 if (!initialFileNeedsProcessing && (di == firstDelta))
                     inFile = initialFile;
                 String outFile = tempFiles[tempFile];
-                if (!config.getApplySignature() && (di == lastDelta))
-                    outFile = config.getPathBase() + lastDelta.getOut().getName();
+                if (!apply_signature && (di == lastDelta))
+                    outFile = path_base + lastDelta.getOut().getName();
 
-                if (!dedelta(inFile, config.getPathBase() + di.getUpdate().getName(), outFile,
-                        start, current,
+                if (!dedelta(inFile, path_base + di.getUpdate().getName(), outFile, start, current,
                         total)) {
                     updateState(STATE_ERROR_UNKNOWN, null, null, null, null, null);
                     Logger.d("dedelta error");
@@ -907,9 +953,9 @@ public class UpdateService
                 current += di.getUpdate().getApplied().getSize();
             }
 
-            if (config.getApplySignature()) {
-                if (!dedelta(tempFiles[(tempFile + 1) % 2], config.getPathBase()
-                        + lastDelta.getSignature().getName(), config.getPathBase()
+            if (apply_signature) {
+                if (!dedelta(tempFiles[(tempFile + 1) % 2], path_base
+                        + lastDelta.getSignature().getName(), path_base
                         + lastDelta.getOut().getName(), start, current, total)) {
                     updateState(STATE_ERROR_UNKNOWN, null, null, null, null, null);
                     Logger.d("dedelta error");
@@ -924,10 +970,6 @@ public class UpdateService
         }
 
         return true;
-    }
-
-    private void writeString(OutputStream os, String s) throws UnsupportedEncodingException, IOException {
-        os.write((s + "\n").getBytes("UTF-8"));
     }
 
     @SuppressLint("SdCardPath")
@@ -946,7 +988,7 @@ public class UpdateService
         String flashFilename = prefs.getString(PREF_READY_FILENAME_NAME,
                 PREF_READY_FILENAME_DEFAULT);
         prefs.edit().putString(PREF_READY_FILENAME_NAME, PREF_READY_FILENAME_DEFAULT).commit();
-        if ((flashFilename == null) || !flashFilename.startsWith(config.getPathBase()))
+        if ((flashFilename == null) || !flashFilename.startsWith(path_base))
             return;
 
         // Remove the path to the storage from the filename, so we get a path
@@ -954,62 +996,46 @@ public class UpdateService
         String path_sd = Environment.getExternalStorageDirectory() + File.separator;
         flashFilename = flashFilename.substring(path_sd.length());
 
-        // Find additional ZIPs to flash, strip path to sd
-        List<String> extras = config.getFlashAfterUpdateZIPs();
-        for (int i = 0; i < extras.size(); i++) {
-            extras.set(i, extras.get(i).substring(path_sd.length()));
+        // Find additional ZIPs to flash
+        List<String> extras = new ArrayList<String>();
+        {
+            File[] files = (new File(path_flash_after_update)).listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.getName().toLowerCase(Locale.ENGLISH).endsWith(".zip")) {
+                        String filename = f.getAbsolutePath();
+                        if (filename.startsWith(path_base)) {
+                            extras.add(filename.substring(path_sd.length()));
+                        }
+                    }
+                }
+            }
+            Collections.sort(extras);
         }
 
         try {
+            // We're using TWRP's openrecoveryscript as primary, and CWM's
+            // extendedcommand as fallback. Using AOSP's command would 
+            // break older TWRPs. extendedcommand is broken on 'official' 
+            // CWM builds, though.
+
             // TWRP - OpenRecoveryScript - the recovery will find the correct
-            // storage root for the ZIPs, life is nice and easy.
-            //
-            // Optionally, we're injecting our own signature verification keys
-            // and verifying against those. We place these keys in /cache
-            // where only privileged apps can edit, contrary to the storage
-            // location of the ZIP itself - anyone can modify the ZIP.
-            // As such, flashing the ZIP without checking the whole-file
-            // signature coming from a secure location would be a security 
-            // risk.
-            {
-                if (config.getInjectSignatureEnable()) {
-                    FileOutputStream os = new FileOutputStream("/cache/recovery/keys", false);
-                    try {
-                        writeString(os, config.getInjectSignatureKeys());
-                    } finally {
-                        os.close();
-                    }
-                    setPermissions("/cache/recovery/keys", 0644, Process.myUid(), 2001 /* AID_CACHE */);
-                }
-                
+            // storage root for the ZIPs,
+            // life is nice and easy.
+            if ((flashFilename != null) && (!flashFilename.equals(""))) {
                 FileOutputStream os = new FileOutputStream("/cache/recovery/openrecoveryscript",
                         false);
                 try {
-                    if (config.getInjectSignatureEnable()) {
-                        writeString(os, "cmd cat /res/keys > /res/keys_org");
-                        writeString(os, "cmd cat /cache/recovery/keys > /res/keys");
-                        writeString(os, "set tw_signed_zip_verify 1");
-                        writeString(os, String.format("install %s", flashFilename));
-                        writeString(os, "set tw_signed_zip_verify 0");
-                        writeString(os, "cmd cat /res/keys_org > /res/keys");
-                        writeString(os, "cmd rm /res/keys_org");
-                    } else {
-                        writeString(os, String.format("install %s", flashFilename));                        
+                    os.write(String.format("install %s\n", flashFilename).getBytes("UTF-8"));
+                    for (String file : extras) {
+                        os.write(String.format("install %s\n", file).getBytes("UTF-8"));
                     }
-
-                    if (!config.getSecureModeCurrent()) {
-                        // any program could have placed these ZIPs, so ignore them in secure mode
-                        for (String file : extras) {
-                            writeString(os, String.format("install %s", file));
-                        }
-                    }
-                    writeString(os, "wipe cache");
+                    os.write(("wipe cache\n").getBytes("UTF-8"));
                 } finally {
                     os.close();
                 }
-                
-                setPermissions("/cache/recovery/openrecoveryscript", 0644, Process.myUid(), 2001 /* AID_CACHE */);
             }
+            setPermissions("/cache/recovery/openrecoveryscript", 0644, Process.myUid(), 2001 /* AID_CACHE */);
 
             // CWM - ExtendedCommand - provide paths to both internal and
             // external storage locations, it's nigh impossible to know in
@@ -1019,27 +1045,26 @@ public class UpdateService
             // versions to have them reversed. It'll give some horrible looking
             // results, but it seems to continue installing even if one ZIP
             // fails and produce the wanted result. Better than nothing ...
-            //
-            // We don't generate a CWM script in secure mode, because it 
-            // doesn't support checking our custom signatures
-            if (!config.getSecureModeCurrent()) {
+            if ((flashFilename != null) && (!flashFilename.equals(""))) {
                 FileOutputStream os = new FileOutputStream("/cache/recovery/extendedcommand", false);
                 try {
-                    writeString(os, String.format("install_zip(\"%s%s\");", "/sdcard/", flashFilename));
-                    writeString(os, String.format("install_zip(\"%s%s\");", "/emmc/", flashFilename));
+                    os.write(String.format("install_zip(\"%s%s\");\n", "/sdcard/", flashFilename)
+                            .getBytes("UTF-8"));
+                    os.write(String.format("install_zip(\"%s%s\");\n", "/emmc/", flashFilename)
+                            .getBytes("UTF-8"));
                     for (String file : extras) {
-                        writeString(os, String.format("install_zip(\"%s%s\");", "/sdcard/", file));
-                        writeString(os, String.format("install_zip(\"%s%s\");", "/emmc/", file));
+                        os.write(String.format("install_zip(\"%s%s\");\n", "/sdcard/", file)
+                                .getBytes("UTF-8"));
+                        os.write(String.format("install_zip(\"%s%s\");\n", "/emmc/", file)
+                                .getBytes("UTF-8"));
                     }
-                    writeString(os, "run_program(\"/sbin/busybox\", \"rm\", \"-rf\", \"/cache/*\");");
+                    os.write(("run_program(\"/sbin/busybox\", \"rm\", \"-rf\", \"/cache/*\");\n")
+                            .getBytes("UTF-8"));
                 } finally {
                     os.close();
                 }
-
-                setPermissions("/cache/recovery/extendedcommand", 0644, Process.myUid(), 2001 /* AID_CACHE */);
-            } else {
-                (new File("/cache/recovery/extendedcommand")).delete();
             }
+            setPermissions("/cache/recovery/extendedcommand", 0644, Process.myUid(), 2001 /* AID_CACHE */);
 
             ((PowerManager) getSystemService(Context.POWER_SERVICE)).reboot("recovery");
         } catch (Exception e) {
@@ -1075,22 +1100,20 @@ public class UpdateService
                     List<DeltaInfo> deltas = new ArrayList<DeltaInfo>();
 
                     String flashFilename = null;
-                    (new File(config.getPathBase())).mkdir();
-                    (new File(config.getPathFlashAfterUpdate())).mkdir();
+                    (new File(path_base)).mkdir();
+                    (new File(path_flash_after_update)).mkdir();
 
                     // Create a list of deltas to apply to get from our current
                     // version to the latest
-                    String fetch = String.format(Locale.ENGLISH, "%s%s.delta",
-                            config.getUrlBaseDelta(),
-                            config.getFilenameBase());
+                    String fetch = String.format(Locale.ENGLISH, "%s%s.delta", url_base_delta,
+                            filename_base);
                     while (true) {
                         DeltaInfo delta = null;
 
                         try {
                             delta = new DeltaInfo(downloadUrlMemory(fetch), false);
                         } catch (JSONException e) {
-                            // There's an error in the JSON. Could be bad JSON,
-                            // could be a 404 text, etc
+                            // There's an error in the JSON. Could be bad JSON, could be a 404 text, etc
                             Logger.ex(e);
                         } catch (NullPointerException e) {
                             // Download failed
@@ -1105,24 +1128,21 @@ public class UpdateService
                                 delta = new DeltaInfo(downloadUrlMemory(fetch.replace(".delta",
                                         ".delta_revoked")), true);
                             } catch (JSONException e) {
-                                // There's an error in the JSON. Could be bad
-                                // JSON, could be a 404 text, etc
+                                // There's an error in the JSON. Could be bad JSON, could be a 404 text, etc
                                 Logger.ex(e);
                             } catch (NullPointerException e) {
                                 // Download failed
                                 Logger.ex(e);
                             }
-
-                            // We didn't get a delta or a delta_revoked - end of
-                            // the delta availability chain
+                            
+                            // We didn't get a delta or a delta_revoked - end of the delta availability chain
                             if (delta == null)
                                 break;
                         }
 
                         Logger.d("delta --> [%s]", delta.getOut().getName());
-                        fetch = String.format(Locale.ENGLISH, "%s%s.delta",
-                                config.getUrlBaseDelta(), delta
-                                        .getOut().getName().replace(".zip", ""));
+                        fetch = String.format(Locale.ENGLISH, "%s%s.delta", url_base_delta, delta
+                                .getOut().getName().replace(".zip", ""));
                         deltas.add(delta);
                     }
 
@@ -1133,7 +1153,7 @@ public class UpdateService
                         int last = -1;
                         for (int i = deltas.size() - 1; i >= 0; i--) {
                             DeltaInfo di = deltas.get(i);
-                            String fn = config.getPathBase() + di.getOut().getName();
+                            String fn = path_base + di.getOut().getName();
                             if (di.getOut()
                                     .match(new File(fn),
                                             true,
@@ -1172,7 +1192,7 @@ public class UpdateService
                         boolean initialFileNeedsProcessing = false;
                         {
                             boolean[] needsProcessing = new boolean[] {
-                                    false
+                                false
                             };
                             initialFile = findInitialFile(deltas, flashFilename, needsProcessing);
                             initialFileNeedsProcessing = needsProcessing[0];
@@ -1186,7 +1206,7 @@ public class UpdateService
                         boolean getFull = ((initialFile == null) || (deltaDownloadSize > fullDownloadSize));
 
                         long requiredSpace = getRequiredSpace(deltas, getFull);
-                        long freeSpace = (new StatFs(config.getPathBase())).getAvailableBytes();
+                        long freeSpace = (new StatFs(path_base)).getAvailableBytes();
                         if (freeSpace < requiredSpace) {
                             updateState(STATE_ERROR_DISK_SPACE, null, freeSpace, requiredSpace,
                                     null, null);
@@ -1207,7 +1227,7 @@ public class UpdateService
 
                         // Verify using MD5
                         if (lastDelta.getOut().match(
-                                new File(config.getPathBase() + lastDelta.getOut().getName()),
+                                new File(path_base + lastDelta.getOut().getName()),
                                 true,
                                 getMD5Progress(STATE_ACTION_APPLYING_MD5, lastDelta.getOut()
                                         .getName())) == null) {
@@ -1219,17 +1239,17 @@ public class UpdateService
 
                         // Cleanup
                         for (DeltaInfo di : deltas) {
-                            (new File(config.getPathBase() + di.getUpdate().getName())).delete();
-                            (new File(config.getPathBase() + di.getSignature().getName())).delete();
+                            (new File(path_base + di.getUpdate().getName())).delete();
+                            (new File(path_base + di.getSignature().getName())).delete();
                             if (di != lastDelta)
-                                (new File(config.getPathBase() + di.getOut().getName())).delete();
+                                (new File(path_base + di.getOut().getName())).delete();
                         }
                         if (initialFile != null) {
-                            if (initialFile.startsWith(config.getPathBase()))
+                            if (initialFile.startsWith(path_base))
                                 (new File(initialFile)).delete();
                         }
 
-                        flashFilename = config.getPathBase() + lastDelta.getOut().getName();
+                        flashFilename = path_base + lastDelta.getOut().getName();
                     }
 
                     if (flashFilename != null) {
