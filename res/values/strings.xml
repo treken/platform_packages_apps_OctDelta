@@ -18,13 +18,13 @@
     <string name="about_content"><![CDATA[
         Carbon Delta &copy; 2014 the Carbon ROM Team.<br>
         Created for <b>CarbonROM</b> by <b>David \'PhaseBurn\' Bauman</b> and <b>Christian \'Myself5\' Oder</b><br>
-        Based on <b>OpenDelta</b> by <i>OmniROM</i> and <b>Jorrit 'Chainfire' Jongma</b><br>
+        Based on <b>OpenDelta</b> by <i>OmniROM</i> and <b>Jorrit \'Chainfire\' Jongma</b><br>
         <br>
         Licensed under the terms of the <b>GNU General Public License, version 3.0 (GPLv3)</b><br>
         <br>
         Delta decoding based on <b>xdelta</b>, copyright &copy; _COPYRIGHT_XDELTA_ <b>Joshua MacDonald</b><br>
         <br>
-        <small>Dedicated to SwagKiller, may he always bring a smile to those in need.</small>
+        <small>Dedicated to <b><font color=\'pink\'>SwagKiller</font></b>, may he always bring a smile to those in need.</small>
     ]]></string>
 
     <string name="state_action_none">Your system is up to date</string>
