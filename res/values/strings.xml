@@ -16,36 +16,38 @@
     <string name="action_secure_mode">Secure Mode</string>
 
     <string name="about_content"><![CDATA[
-        Copyright &copy; 2014 <b>David \'PhaseBurn\' Bauman</b> and Christian \'Myself5\' Oder<br>
-        <br>
-        Created for <b>CarbonROM</b> and based off OpenDelta by <i>OmniROM</i> and <i>Chainfire</i><br>
+        Carbon Delta &copy; 2014 the Carbon ROM Team.<br>
+        Created for <b>CarbonROM</b> by <b>David \'PhaseBurn\' Bauman</b> and <b>Christian \'Myself5\' Oder</b><br>
+        Based on <b>OpenDelta</b> by <i>OmniROM</i> and <b>Jorrit 'Chainfire' Jongma</b><br>
         <br>
         Licensed under the terms of the <b>GNU General Public License, version 3.0 (GPLv3)</b><br>
         <br>
         Delta decoding based on <b>xdelta</b>, copyright &copy; _COPYRIGHT_XDELTA_ <b>Joshua MacDonald</b><br>
+        <br>
+        <small>Dedicated to SwagKiller, may he always bring a smile to those in need.</small>
     ]]></string>
 
     <string name="state_action_none">Your system is up to date</string>
-    <string name="state_action_checking">Checking for updates &#8230;</string>
-    <string name="state_action_checking_md5">Verifying file &#8230;</string>
-    <string name="state_action_searching">Searching for files &#8230;</string>
-    <string name="state_action_searching_md5">Verifying file &#8230;</string>
-    <string name="state_action_downloading">Downloading &#8230;</string>
-    <string name="state_action_applying">Patching &#8230;</string>	
-    <string name="state_action_applying_patch">Patching &#8230;</string>
-    <string name="state_action_applying_md5">Verifying file &#8230;</string>
+    <string name="state_action_checking">Checking for updates&#8230;</string>
+    <string name="state_action_checking_md5">Verifying file&#8230;</string>
+    <string name="state_action_searching">Searching for files&#8230;</string>
+    <string name="state_action_searching_md5">Verifying file&#8230;</string>
+    <string name="state_action_downloading">Downloading&#8230;</string>
+    <string name="state_action_applying">Patching&#8230;</string>
+    <string name="state_action_applying_patch">Patching&#8230;</string>
+    <string name="state_action_applying_md5">Verifying file&#8230;</string>
     <string name="state_action_ready">An update is available</string>
-    <string name="state_error_disk_space">Not enough disk space!</string>
-    <string name="state_error_unknown">Failed to reticulate splines!</string>
+    <string name="state_error_disk_space">Not enough disk space</string>
+    <string name="state_error_unknown">Failed to reticulate splines!!!1!11one</string>
 
     <string name="error_disk_space_sub" formatted="false">%d MB available, %d MB required</string>
 
     <string name="notify_update_available">An update is available</string>
-    <string name="notify_checking">Checking for updates &#8230;</string>
+    <string name="notify_checking">Checking for updates&#8230;</string>
 
-    <string name="last_checked" formatted="false">Last checked on %s at %s</string>
-    <string name="last_checked_never">We\'ve never checked, maybe you would like to do so?</string>
+    <string name="last_checked" formatted="false">Last checked for updates on %s at %s</string>
+    <string name="last_checked_never">No prior update detected. You should really fix that.</string>
 
-    <string name="button_check_now">Check now &#8230;</string>
-    <string name="button_flash_now">Flash now</string>
+    <string name="button_check_now">Check now&#8230;</string>
+    <string name="button_flash_now">Flash now!</string>
 </resources>
