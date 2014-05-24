@@ -16,13 +16,13 @@
     <string name="path_base">CarbonDelta</string>
 
     <!-- URL base to find .delta files, %s is expanded to property_device value. Path is suffixed by (expanded) filename_base -->
-    <string name="url_base_delta">http://delta.carbon-rom.com/%s/</string>
+    <string name="url_base_delta">https://delta.carbonrom.org/%s/</string>
 
     <!-- URL base to find .update and .sign files, %s is expanded to property_device value. Path is suffixed by (expanded) filename_base -->
-    <string name="url_base_update">http://delta.carbon-rom.com/%s/</string>
+    <string name="url_base_update">https://delta.carbonrom.org/%s/</string>
 
     <!-- URL base to find the full zip files, %s is expanded to property_device value. Path is suffixed by (expanded) filename_base -->
-    <string name="url_base_full">http://download.carbon-rom.com/files/%s/nightly/</string>
+    <string name="url_base_full">https://delta.carbonrom.org/nobrac/%s/nightly/</string>
 
     <!-- Applies whole-file signature delta. Adds one extra delta step. Required if recovery verifies signatures -->
     <item type="bool" name="apply_signature">false</item>
