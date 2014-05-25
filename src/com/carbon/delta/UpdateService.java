@@ -1105,8 +1105,8 @@ public class
 
                     // Create a list of deltas to apply to get from our current
                     // version to the latest
-                    String fetch = String.format(Locale.ENGLISH, "%s%s.delta", url_base_delta,
-                            filename_base);
+                    String fetch = String.format(Locale.ENGLISH, "%s%s-%s.delta", url_base_delta,
+                            filename_base, property_device);
                     while (true) {
                         DeltaInfo delta = null;
 
