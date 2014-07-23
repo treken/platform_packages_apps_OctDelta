@@ -23,6 +23,7 @@
 package com.carbon.delta;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -69,7 +70,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class 
+public class
         UpdateService
         extends
         Service
@@ -135,6 +136,7 @@ public class
     private static final String ACTION_FLASH = "com.carbon.delta.action.FLASH";
     private static final String ACTION_ALARM = "com.carbon.delta.action.ALARM";
     private static final String EXTRA_ALARM_ID = "com.carbon.delta.extra.ALARM_ID";
+private static final String ACTION_NOTIFICATION_DELETED = "com.carbon.delta.action.NOTIFICATION_DELETED";
 
     private static final int NOTIFICATION_BUSY = 1;
     private static final int NOTIFICATION_UPDATE = 2;
@@ -144,6 +146,11 @@ public class
 
     private static final String PREF_LAST_CHECK_TIME_NAME = "last_check_time";
     private static final long PREF_LAST_CHECK_TIME_DEFAULT = 0L;
+
+    private static final String PREF_LAST_SNOOZE_TIME_NAME = "last_snooze_time";
+    private static final long PREF_LAST_SNOOZE_TIME_DEFAULT = 0L;
+
+    private static final long SNOOZE_MS = 24 * AlarmManager.INTERVAL_HOUR;
 
     public static final String PREF_AUTO_UPDATE_NETWORKS_NAME = "auto_update_networks";
     public static final int PREF_AUTO_UPDATE_NETWORKS_DEFAULT = NetworkState.ALLOW_WIFI
@@ -165,6 +172,7 @@ public class
     private String url_base_full;
     private boolean apply_signature;
 
+    private Config config;
     private HandlerThread handlerThread;
     private Handler handler;
 
@@ -227,6 +235,7 @@ public class
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onCreate() {
         super.onCreate();
@@ -259,8 +268,13 @@ public class
         Logger.d("url_base_update: %s", url_base_update);
         Logger.d("url_base_full: %s", url_base_full);
 
+        config = Config.getInstance(this);
+
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK, "CarbonDelta WakeLock");
+                config.getKeepScreenOn() ?
+                        PowerManager.SCREEN_DIM_WAKE_LOCK :
+                        PowerManager.PARTIAL_WAKE_LOCK,
+                "CarbonDelta WakeLock");
         wifiLock = ((WifiManager) getSystemService(WIFI_SERVICE)).createWifiLock(
                 WifiManager.WIFI_MODE_FULL, "CarbonDelta WifiLock");
 
@@ -308,6 +322,11 @@ public class
                 flashUpdate();
             } else if (ACTION_ALARM.equals(intent.getAction())) {
                 scheduler.alarm(intent.getIntExtra(EXTRA_ALARM_ID, -1));
+                autoState();
+            } else if (ACTION_NOTIFICATION_DELETED.equals(intent.getAction())) {
+                Logger.i("Snoozing for 24 hours");
+                prefs.edit().putLong(PREF_LAST_SNOOZE_TIME_NAME, System.currentTimeMillis()).commit();
+                autoState();
             }
         }
 
@@ -384,13 +403,26 @@ public class
             startNotification();
             updateState(STATE_ACTION_READY, null, null, null, (new File(filename)).getName(),
                     prefs.getLong(PREF_LAST_CHECK_TIME_NAME, PREF_LAST_CHECK_TIME_DEFAULT));
+
+            // check if we're snoozed, using abs for clock changes
+            if (Math.abs(System.currentTimeMillis() - prefs.getLong(PREF_LAST_SNOOZE_TIME_NAME, PREF_LAST_SNOOZE_TIME_DEFAULT)) > SNOOZE_MS) {
+                startNotification();
+            } else {
+                stopNotification();
+            }
         }
     }
 
-    private PendingIntent getNotificationIntent() {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.setAction(ACTION_SYSTEM_UPDATE_SETTINGS);
-        return PendingIntent.getActivity(this, 0, notificationIntent, 0);
+private PendingIntent getNotificationIntent(boolean delete) {
+        if (delete) {
+            Intent notificationIntent = new Intent(this, UpdateService.class);
+            notificationIntent.setAction(ACTION_NOTIFICATION_DELETED);
+            return PendingIntent.getService(this, 0, notificationIntent, 0);
+        } else {
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            notificationIntent.setAction(ACTION_SYSTEM_UPDATE_SETTINGS);
+            return PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        }
     }
 
     private void startNotification() {
@@ -403,7 +435,8 @@ public class
                                 setContentText(getString(R.string.notify_update_available)).
                                 setTicker(getString(R.string.notify_update_available)).
                                 setShowWhen(false).
-                                setContentIntent(getNotificationIntent()).
+                                setContentIntent(getNotificationIntent(false)).
+                                setDeleteIntent(getNotificationIntent(true)).
                                 build()
                 );
     }
@@ -821,7 +854,7 @@ public class
 
         // If the user flashed manually, the file is probably not in our
         // preferred location (assuming it wasn't sideloaded), so search
-        // the (internal) storage for it. Should at some point be 
+        // the (internal) storage for it. Should at some point be
         // extended to search (true) external storage as well.
         if (initialFile == null) {
             initialFile = findZIPOnSD(firstDelta.getIn(), null);
@@ -1015,8 +1048,8 @@ public class
 
         try {
             // We're using TWRP's openrecoveryscript as primary, and CWM's
-            // extendedcommand as fallback. Using AOSP's command would 
-            // break older TWRPs. extendedcommand is broken on 'official' 
+            // extendedcommand as fallback. Using AOSP's command would
+            // break older TWRPs. extendedcommand is broken on 'official'
             // CWM builds, though.
 
             // TWRP - OpenRecoveryScript - the recovery will find the correct
@@ -1068,7 +1101,7 @@ public class
 
             ((PowerManager) getSystemService(Context.POWER_SERVICE)).reboot("recovery");
         } catch (Exception e) {
-            // We have failed to write something. There's not really anything else to do at 
+            // We have failed to write something. There's not really anything else to do at
             // at this stage than give up. No reason to crash though.
             Logger.ex(e);
         }
@@ -1087,7 +1120,7 @@ public class
                 setContentText(getString(R.string.notify_checking)).
                 setTicker(getString(R.string.notify_checking)).
                 setShowWhen(false).
-                setContentIntent(getNotificationIntent()).
+                setContentIntent(getNotificationIntent(false)).
                 build();
         startForeground(NOTIFICATION_BUSY, notification);
 
@@ -1134,7 +1167,7 @@ public class
                                 // Download failed
                                 Logger.ex(e);
                             }
-                            
+
                             // We didn't get a delta or a delta_revoked - end of the delta availability chain
                             if (delta == null)
                                 break;
@@ -1260,8 +1293,8 @@ public class
                             .commit();
                 } finally {
                     stopForeground(true);
-                    wifiLock.release();
-                    wakeLock.release();
+                    if (wifiLock.isHeld()) wifiLock.release();
+                    if (wakeLock.isHeld()) wakeLock.release();
                     autoState();
                 }
             }
