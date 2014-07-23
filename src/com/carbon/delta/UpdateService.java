@@ -136,7 +136,7 @@ public class
     private static final String ACTION_FLASH = "com.carbon.delta.action.FLASH";
     private static final String ACTION_ALARM = "com.carbon.delta.action.ALARM";
     private static final String EXTRA_ALARM_ID = "com.carbon.delta.extra.ALARM_ID";
-private static final String ACTION_NOTIFICATION_DELETED = "com.carbon.delta.action.NOTIFICATION_DELETED";
+    private static final String ACTION_NOTIFICATION_DELETED = "com.carbon.delta.action.NOTIFICATION_DELETED";
 
     private static final int NOTIFICATION_BUSY = 1;
     private static final int NOTIFICATION_UPDATE = 2;
@@ -413,7 +413,7 @@ private static final String ACTION_NOTIFICATION_DELETED = "com.carbon.delta.acti
         }
     }
 
-private PendingIntent getNotificationIntent(boolean delete) {
+    private PendingIntent getNotificationIntent(boolean delete) {
         if (delete) {
             Intent notificationIntent = new Intent(this, UpdateService.class);
             notificationIntent.setAction(ACTION_NOTIFICATION_DELETED);
