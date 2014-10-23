@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2014 Carbon Development
+     Copyright (C) Team OcOS
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,8 +15,8 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">Carbon Delta</string>
-    <string name="title">Обновление Carbon</string>
+    <string name="app_name">Oct Delta</string>
+    <string name="title">Обновление OctOS</string>
 
     <string name="action_networks">Сети</string>
     <string name="title_networks">Сети для обновлений</string>
@@ -30,8 +31,8 @@
     <string name="action_secure_mode">Безопасный режим</string>
 
     <string name="about_content"><![CDATA[
-        Carbon Delta &copy; 2014 the Carbon ROM Team.<br>
-        Программа создана для <b>CarbonROM</b> by <b>David \'PhaseBurn\' Bauman</b> и <b>Christian \'Myself5\' Oder</b><br>
+        Oct Delta &copy; 2014 Team OctOS<br>
+        Программа создана для <b>OctOS</b> by <b>Kevin \'Treken\' Chupe</b><br>
         Базируется на <b>OpenDelta</b> от <i>OmniROM</i> и <b>Jorrit \'Chainfire\' Jongma</b><br>
         <br>
         Распространяется под лицензией <b>GNU General Public License, version 3.0 (GPLv3)</b><br>

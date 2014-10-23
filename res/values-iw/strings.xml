@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2014 Carbon Development
+     Copyright (C) 2014 Team OctOS
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,8 +15,9 @@
      limitations under the License.
 -->
 <resources>
-  <string name="app_name">Carbon Delta</string>
-  <string name="title">עדכוני Carbon</string>
+	 נוצר עבור <b>OctOS</b> על ידי <b>Kevin \'Treken\' Chupe</b><br>
+  <string name="app_name">Oct Delta</string>
+  <string name="title">עדכוניOctOS n</string>
   <string name="action_networks">רשתות</string>
   <string name="title_networks">רשתות לעדכון אוטומטי</string>
   <string name="network_2g">2G</string>
@@ -27,8 +29,8 @@
   <string name="action_about">אודות</string>
   <string name="action_secure_mode">מצב מאובטח</string>
   <string name="about_content"><![CDATA[
-        Carbon Delta &copy; 2014צוות פיתוח Carbon ROM.<br>
-        נוצר עבור <b>CarbonROM</b> על ידי <b>David \'PhaseBurn\' Bauman</b> and <b>Christian \'Myself5\' Oder</b><br>
+        Oct Delta &copy; 2014צוות פיתוח Team OctOS.<br>
+        נוצ נוצר עבור <b>OctOS</b> על ידי <b>Kevin \'Treken\' Chupe</b><br>
         מבוסס על <b>OpenDelta</b> מאת <i>OmniROM</i> ו-<b>Jorrit \'Chainfire\' Jongma</b><br>
         <br>
         תחת הרישיון <b>GNU General Public License, version 3.0 (GPLv3)</b><br>

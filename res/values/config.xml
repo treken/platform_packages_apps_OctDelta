@@ -4,16 +4,16 @@
     <item type="bool" name="debug_output">false</item>
 
     <!-- Property to read for ROM version -->
-    <string name="property_version">ro.carbon.version</string>
+    <string name="property_version">ro.oct.version</string>
 
     <!-- Property to read for device identifier -->
-    <string name="property_device">ro.carbon.device</string>
+    <string name="property_device">ro.oct.device</string>
 
     <!-- %s is expanded to property_version value. .zip, .delta, .update, .sign extensions added when needed -->
     <string name="filename_base">%s</string>
 
     <!-- Path deltas are stored, relative to sdcard root -->
-    <string name="path_base">CarbonDelta</string>
+    <string name="path_base">OctDelta</string>
 
     <!-- URL base to find .delta files, %s is expanded to property_device value. Path is suffixed by (expanded) filename_base -->
     <string name="url_base_delta">https://delta.carbonrom.org/%s/</string>
