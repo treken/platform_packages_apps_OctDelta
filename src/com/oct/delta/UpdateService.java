@@ -1,26 +1,28 @@
 /* 
  * Copyright (C) 2014 David "PhaseBurn" Bauman
  * Copyright (C) 2014 CarbonROM
+ * Copyright (C) 2014 Team OctOS
+ * 
  * Based on Chainfire's OpenDelta for Omni Rom, and work by Myself5
  */
 /* 
- * This file is part of CarbonDelta.
+ * This file is part of OctDelta.
  * 
- * CarbonDelta is free software: you can redistribute it and/or modify
+ * OctDelta is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CarbonDelta is distributed in the hope that it will be useful,
+ * OctDelta is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CarbonDelta. If not, see <http://www.gnu.org/licenses/>.
+ * along with OctDelta. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.carbon.delta;
+package com.oct.delta;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -44,10 +46,10 @@ import android.os.StatFs;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-import com.carbon.delta.BatteryState.OnBatteryStateListener;
-import com.carbon.delta.NetworkState.OnNetworkStateListener;
-import com.carbon.delta.Scheduler.OnWantUpdateCheckListener;
-import com.carbon.delta.ScreenState.OnScreenStateListener;
+import com.oct.delta.BatteryState.OnBatteryStateListener;
+import com.oct.delta.NetworkState.OnNetworkStateListener;
+import com.oct.delta.Scheduler.OnWantUpdateCheckListener;
+import com.oct.delta.ScreenState.OnScreenStateListener;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -110,14 +112,14 @@ public class
     public static final String PERMISSION_ACCESS_CACHE_FILESYSTEM = "android.permission.ACCESS_CACHE_FILESYSTEM";
     public static final String PERMISSION_REBOOT = "android.permission.REBOOT";
 
-    public static final String BROADCAST_INTENT = "com.carbon.delta.intent.BROADCAST_STATE";
-    public static final String EXTRA_STATE = "com.carbon.delta.extra.ACTION_STATE";
-    public static final String EXTRA_LAST_CHECK = "com.carbon.delta.extra.LAST_CHECK";
-    public static final String EXTRA_PROGRESS = "com.carbon.delta.extra.PROGRESS";
-    public static final String EXTRA_CURRENT = "com.carbon.delta.extra.CURRENT";
-    public static final String EXTRA_TOTAL = "com.carbon.delta.extra.TOTAL";
-    public static final String EXTRA_FILENAME = "com.carbon.delta.extra.FILENAME";
-    public static final String EXTRA_MS = "com.carbon.delta.extra.MS";
+    public static final String BROADCAST_INTENT = "com.oct.delta.intent.BROADCAST_STATE";
+    public static final String EXTRA_STATE = "com.oct.delta.extra.ACTION_STATE";
+    public static final String EXTRA_LAST_CHECK = "com.oct.delta.extra.LAST_CHECK";
+    public static final String EXTRA_PROGRESS = "com.oct.delta.extra.PROGRESS";
+    public static final String EXTRA_CURRENT = "com.oct.delta.extra.CURRENT";
+    public static final String EXTRA_TOTAL = "com.oct.delta.extra.TOTAL";
+    public static final String EXTRA_FILENAME = "com.oct.delta.extra.FILENAME";
+    public static final String EXTRA_MS = "com.oct.delta.extra.MS";
 
     public static final String STATE_ACTION_NONE = "action_none";
     public static final String STATE_ACTION_CHECKING = "action_checking";
@@ -132,11 +134,11 @@ public class
     public static final String STATE_ERROR_DISK_SPACE = "error_disk_space";
     public static final String STATE_ERROR_UNKNOWN = "error_unknown";
 
-    private static final String ACTION_CHECK = "com.carbon.delta.action.CHECK";
-    private static final String ACTION_FLASH = "com.carbon.delta.action.FLASH";
-    private static final String ACTION_ALARM = "com.carbon.delta.action.ALARM";
-    private static final String EXTRA_ALARM_ID = "com.carbon.delta.extra.ALARM_ID";
-    private static final String ACTION_NOTIFICATION_DELETED = "com.carbon.delta.action.NOTIFICATION_DELETED";
+    private static final String ACTION_CHECK = "com.oct.delta.action.CHECK";
+    private static final String ACTION_FLASH = "com.oct.delta.action.FLASH";
+    private static final String ACTION_ALARM = "com.oct.delta.action.ALARM";
+    private static final String EXTRA_ALARM_ID = "com.oct.delta.extra.ALARM_ID";
+    private static final String ACTION_NOTIFICATION_DELETED = "com.oct.delta.action.NOTIFICATION_DELETED";
 
     private static final int NOTIFICATION_BUSY = 1;
     private static final int NOTIFICATION_UPDATE = 2;
@@ -274,11 +276,11 @@ public class
                 config.getKeepScreenOn() ?
                         PowerManager.SCREEN_DIM_WAKE_LOCK :
                         PowerManager.PARTIAL_WAKE_LOCK,
-                "CarbonDelta WakeLock");
+                "OctDelta WakeLock");
         wifiLock = ((WifiManager) getSystemService(WIFI_SERVICE)).createWifiLock(
-                WifiManager.WIFI_MODE_FULL, "CarbonDelta WifiLock");
+                WifiManager.WIFI_MODE_FULL, "OctDelta WifiLock");
 
-        handlerThread = new HandlerThread("CarbonDelta Service Thread");
+        handlerThread = new HandlerThread("OctDelta Service Thread");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
 

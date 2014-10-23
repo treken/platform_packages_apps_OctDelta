@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2014 Carbon Development
+     Copyright (C) 2014 Team OctOS
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,8 +15,8 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">Carbon Delta</string>
-    <string name="title">Carbon Updates</string>
+    <string name="app_name">Oct Delta</string>
+    <string name="title">OctOS Updates</string>
 
     <string name="action_networks">Networks</string>
     <string name="title_networks">Auto-update networks</string>
@@ -30,8 +31,8 @@
     <string name="action_secure_mode">Secure Mode</string>
 
     <string name="about_content"><![CDATA[
-        Carbon Delta &copy; 2014 the Carbon ROM Team.<br>
-        Created for <b>CarbonROM</b> by <b>David \'PhaseBurn\' Bauman</b> and <b>Christian \'Myself5\' Oder</b><br>
+        Oct Delta &copy; 2014 Team OctOS<br>
+        retrofitted for <b>OctOS</b> by <b>Kevin \'Treken\' Chupe</b><br>
         Based on <b>OpenDelta</b> by <i>OmniROM</i> and <b>Jorrit \'Chainfire\' Jongma</b><br>
         <br>
         Licensed under the terms of the <b>GNU General Public License, version 3.0 (GPLv3)</b><br>
@@ -53,15 +54,11 @@
     <string name="state_action_ready">An update is available</string>
     <string name="state_error_disk_space">Not enough disk space</string>
     <string name="state_error_unknown">Failed to reticulate splines!!!1!11one</string>
-
     <string name="error_disk_space_sub" formatted="false">%d MB available, %d MB required</string>
-
     <string name="notify_update_available">An update is available</string>
     <string name="notify_checking">Checking for updates&#8230;</string>
-
     <string name="last_checked" formatted="false">Last checked for updates on %s at %s</string>
     <string name="last_checked_never">No prior update detected. You should really fix that.</string>
-
     <string name="button_check_now">Check now&#8230;</string>
     <string name="button_flash_now">Flash now!</string>
 </resources>

@@ -1,6 +1,8 @@
 /* 
  * Copyright (C) 2014 David "PhaseBurn" Bauman
  * Copyright (C) 2014 CarbonROM
+ * Copyright (C) 2014 Team OctOS
+ * 
  * Based on Chainfire's OpenDelta for Omni Rom, and work by Myself5
  */
 /* 
@@ -20,7 +22,7 @@
  * along with CarbonDelta. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.carbon.delta;
+package com.oct.delta;
 
 public class Logger {
     private static boolean log = false;
@@ -31,7 +33,7 @@ public class Logger {
 
     public static void d(String message, Object... args) {
         if (log)
-            android.util.Log.d("CarbonDelta", String.format(message, args));
+            android.util.Log.d("OctDelta", String.format(message, args));
     }
 
     public static void ex(Exception e) {
@@ -40,6 +42,6 @@ public class Logger {
     }
 
     public static void i(String message, Object... args) {
-        android.util.Log.i("CarbonDelta", String.format(message, args));
+        android.util.Log.i("OctDelta", String.format(message, args));
     }
 }

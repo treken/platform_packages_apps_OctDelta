@@ -1,26 +1,28 @@
 /* 
  * Copyright (C) 2014 David "PhaseBurn" Bauman
  * Copyright (C) 2014 CarbonROM
+ * Copyright (C) Team OctOS
+ * 
  * Based on Chainfire's OpenDelta for Omni Rom, and work by Myself5
  */
 /* 
- * This file is part of CarbonDelta.
+ * This file is part of OctDelta.
  * 
- * CarbonDelta is free software: you can redistribute it and/or modify
+ * OctDelta is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * CarbonDelta is distributed in the hope that it will be useful,
+ * OctDelta is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with CarbonDelta. If not, see <http://www.gnu.org/licenses/>.
+ * along with OctDelta. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.carbon.delta;
+package com.oct.delta;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -143,7 +145,7 @@ public class MainActivity extends Activity {
 
     private void showAbout() {
         int thisYear = Calendar.getInstance().get(Calendar.YEAR);
-        String carbondelta = (thisYear == 2014) ? "2014" : "2014-" + String.valueOf(thisYear);
+        String octdelta = (thisYear == 2014) ? "2014" : "2014-" + String.valueOf(thisYear);
         String xdelta = (thisYear == 1997) ? "1997" : "1997-" + String.valueOf(thisYear);
 
         AlertDialog dialog = (new AlertDialog.Builder(this)).
@@ -151,7 +153,7 @@ public class MainActivity extends Activity {
                 setMessage(
                         Html.fromHtml(
                                 getString(R.string.about_content).
-                                        replace("_COPYRIGHT_CARBONDELTA_", carbondelta).
+                                        replace("_COPYRIGHT_OCTDELTA_", octdelta).
                                         replace("_COPYRIGHT_XDELTA_", xdelta)
                                 )
                 ).
